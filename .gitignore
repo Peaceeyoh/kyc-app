@@ -1,0 +1,21 @@
+# Virtual environment - never commit this
+venv/
+
+# Python cache files - auto-generated, not needed
+__pycache__/
+*.pyc
+*.pyo
+
+# Environment variables - contains secrets
+.env
+
+# VS Code settings - personal to your machine
+.vscode/
+
+# Database file if using SQLite locally
+*.db
+*.sqlite3
+
+# OS files
+.DS_Store
+Thumbs.db
