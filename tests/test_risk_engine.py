@@ -82,3 +82,62 @@ def test_audit_log_creation(app):
 
         assert len(customer.audit_logs) == 1
         assert customer.audit_logs[0].action == 'KYC_SUBMITTED'
+
+
+
+from app.services.risk_engine import calculate_risk_score, get_risk_level, assess_customer
+
+
+def test_high_risk_country_adds_points():
+    score, breakdown = calculate_risk_score(
+        nationality='Iran',
+        is_pep=False,
+        age=35,
+        documents_submitted=2
+    )
+    assert score == 30
+    assert any('High-risk' in line for line in breakdown)
+
+
+def test_pep_adds_points():
+    score, breakdown = calculate_risk_score(
+        nationality='France',
+        is_pep=True,
+        age=45,
+        documents_submitted=2
+    )
+    assert score == 20
+    assert any('PEP' in line for line in breakdown)
+
+
+def test_no_documents_adds_points():
+    score, breakdown = calculate_risk_score(
+        nationality='France',
+        is_pep=False,
+        age=35,
+        documents_submitted=0
+    )
+    assert score == 20
+    assert any('No documents' in line for line in breakdown)
+
+
+def test_low_risk_customer():
+    result = assess_customer(
+        nationality='France',
+        is_pep=False,
+        age=35,
+        documents_submitted=2
+    )
+    assert result['risk_level'] == 'low'
+    assert result['score'] == -10
+
+
+def test_high_risk_customer():
+    result = assess_customer(
+        nationality='Iran',
+        is_pep=True,
+        age=35,
+        documents_submitted=0
+    )
+    assert result['risk_level'] == 'high'
+    assert result['score'] == 90

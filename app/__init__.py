@@ -21,6 +21,8 @@ def create_app():
     migrate.init_app(app, db)
 
     from app.routes.dashboard import dashboard_bp
+    from app.routes.kyc import kyc_bp
     app.register_blueprint(dashboard_bp)
+    app.register_blueprint(kyc_bp)
 
     return app

@@ -1,5 +1,5 @@
 from app import db
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 class Customer(db.Model):
@@ -12,7 +12,7 @@ class Customer(db.Model):
     nationality = db.Column(db.String(60), nullable=False)
     risk_level = db.Column(db.String(20), default='pending')
     is_verified = db.Column(db.Boolean, default=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
     documents = db.relationship('Document', backref='customer', lazy=True)
     audit_logs = db.relationship('AuditLog', backref='customer', lazy=True)
@@ -29,8 +29,7 @@ class Document(db.Model):
     document_type = db.Column(db.String(50), nullable=False)
     file_name = db.Column(db.String(200), nullable=False)
     is_verified = db.Column(db.Boolean, default=False)
-    uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
-
+    uploaded_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     def __repr__(self):
         return f'<Document {self.document_type} for customer {self.customer_id}>'
 
@@ -42,7 +41,7 @@ class AuditLog(db.Model):
     customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'), nullable=False)
     action = db.Column(db.String(100), nullable=False)
     performed_by = db.Column(db.String(100), nullable=False)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     details = db.Column(db.Text, nullable=True)
 
     def __repr__(self):
