@@ -46,3 +46,19 @@ class AuditLog(db.Model):
 
     def __repr__(self):
         return f'<AuditLog {self.action} at {self.timestamp}>'
+
+
+from flask_login import UserMixin
+
+class User(UserMixin, db.Model):
+    __tablename__ = 'users'
+
+    id = db.Column(db.Integer, primary_key=True)
+    github_id = db.Column(db.String(100), unique=True, nullable=False)
+    username = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(120), nullable=True)
+    role = db.Column(db.String(20), default='analyst')
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+
+    def __repr__(self):
+        return f'<User {self.username} - Role: {self.role}>'

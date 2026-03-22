@@ -82,3 +82,19 @@ def test_duplicate_email_returns_409(client):
     assert response.status_code == 409
     data = response.get_json()
     assert 'already exists' in data['error']
+
+
+def test_login_page_loads(client):
+    response = client.get('/auth/login')
+    assert response.status_code == 200
+
+
+def test_logout_redirects_to_login(client):
+    response = client.get('/auth/logout', follow_redirects=True)
+    assert response.status_code == 200
+
+
+def test_dashboard_requires_login(client):
+    response = client.get('/', follow_redirects=True)
+    assert response.status_code == 200
+    assert b'Login' in response.data
